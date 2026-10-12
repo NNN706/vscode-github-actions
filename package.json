@@ -1,7 +1,7 @@
 {
   "name": "vscode-github-actions-multi-repo",
   "displayName": "GitHub Actions (Multi-Repository)",
-  "publisher": "NNN706",
+  "publisher": "NN703",
   "icon": "resources/logo.png",
   "license": "MIT",
   "repository": {
