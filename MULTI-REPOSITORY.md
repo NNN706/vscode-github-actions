@@ -55,6 +55,6 @@ The editor title bar has **Refresh logs** for logs that are not available immedi
 
 ## Build a release
 
-Open **Actions → Release VSIX → Run workflow** on `main`. The workflow reads the version from `package.json`, runs checks, builds the extension, and creates a `v<version>` GitHub Release containing the `.vsix` and its `.sha256` checksum. The same files are also retained as workflow artifacts.
+Open **Actions → Release VSIX and publish to Marketplace → Run workflow** on `main`. The workflow reads the version from `package.json`, runs checks, builds the extension, and creates a `v<version>` GitHub Release containing the `.vsix` and its `.sha256` checksum. The same files are also retained as workflow artifacts.
 
-Alternatively, push `v<version>` or `release-v<version>`; the tag must match `package.json`. Bump both package manifests before releasing a new version. A repeat run uploads/replaces the assets on the existing release. This workflow uses `GITHUB_TOKEN` and does not require a Marketplace publisher token.
+Alternatively, push `v<version>` or `release-v<version>`; the tag must match `package.json`. Bump both package manifests before releasing a new version. A repeat run uploads/replaces the assets on the existing release. The GitHub Release job uses `GITHUB_TOKEN`. The subsequent Marketplace job requires `VSCE_PAT`; see [Marketplace setup](MARKETPLACE.md). Disable `publish_marketplace` in a manual run to build only the GitHub Release.

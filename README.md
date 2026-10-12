@@ -36,9 +36,13 @@ Be more confident when authoring and modifying workflows. Find errors before com
 
 ![Video showing workflow validation and auto-completion](./media/authoring.gif)
 
+## Publishing this fork
+
+See [Marketplace setup and automated publishing](MARKETPLACE.md).
+
 ## Getting started
 
-1. Install the extension from the [Marketplace](https://marketplace.visualstudio.com/items?itemName=github.vscode-github-actions).
+1. Install the extension from the [Marketplace](https://marketplace.visualstudio.com/items?itemName=NNN706.vscode-github-actions-multi-repo).
 1. Sign in with your GitHub account and when prompted allow `GitHub Actions` access to your GitHub account.
 1. Open a GitHub repository.
 1. You will be able to utilize the syntax features in Workflow files, and you can find the GitHub Actions icon on the left navigation to manage your Workflows.
