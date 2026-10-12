@@ -46,7 +46,7 @@ export function parseLog(log: string): LogInfo {
     if (groupMarkerStart !== -1) {
       // If this is the first group marker we encounter, the previous range was the job setup
       if (firstSection) {
-        firstSection.end = lineIdx - 1;
+        firstSection.end = Math.max(0, lineIdx - 1);
         firstSection = null;
       }
 
@@ -83,6 +83,8 @@ export function parseLog(log: string): LogInfo {
     currentRange.end = lineIdx - 1;
     sections.push(currentRange);
   }
+
+  if (firstSection) firstSection.end = Math.max(0, lineIdx - 1);
 
   return {
     updatedLogLines: lines,

@@ -17,6 +17,8 @@ export class WorkflowStepNode extends vscode.TreeItem {
       this.contextValue += " completed";
     }
 
+    this.command = {command: "github-actions.step.logs", title: "View logs", arguments: [this]};
+
     this.iconPath = getIconForWorkflowStep(this.step);
   }
 }

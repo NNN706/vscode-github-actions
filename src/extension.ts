@@ -101,8 +101,14 @@ export async function activate(context: vscode.ExtensionContext) {
   }
 
   // Log providers
+  const logProvider = new WorkflowStepLogProvider();
   context.subscriptions.push(
-    vscode.workspace.registerTextDocumentContentProvider(LogScheme, new WorkflowStepLogProvider())
+    vscode.workspace.registerTextDocumentContentProvider(LogScheme, logProvider),
+    logProvider.onDidChangeEmitter,
+    vscode.commands.registerCommand("github-actions.logs.refresh", (uri?: vscode.Uri) => {
+      const logUri = uri || vscode.window.activeTextEditor?.document.uri;
+      if (logUri?.scheme === LogScheme) logProvider.onDidChangeEmitter.fire(logUri);
+    })
   );
 
   context.subscriptions.push(

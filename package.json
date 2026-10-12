@@ -8,7 +8,7 @@
     "url": "https://github.com/NNN706/vscode-github-actions"
   },
   "description": "Unofficial fork of GitHub Actions with nested and multi-root repository support",
-  "version": "0.32.4",
+  "version": "0.32.5",
   "engines": {
     "vscode": "^1.72.0",
     "node": ">= 16"
@@ -110,7 +110,7 @@
       {
         "command": "github-actions.debugger.connect",
         "category": "GitHub Actions",
-        "title": "Debug Running Job…"
+        "title": "Debug Running Job\u2026"
       },
       {
         "command": "github-actions.explorer.refresh",
@@ -174,7 +174,7 @@
         "category": "GitHub Actions",
         "title": "View step logs",
         "when": "viewItem =~ /step/",
-        "icon": "$(globe)"
+        "icon": "$(output)"
       },
       {
         "command": "github-actions.workflow.run.rerun",
@@ -278,6 +278,12 @@
       {
         "command": "github-actions.sign-in",
         "title": "Sign in to GitHub"
+      },
+      {
+        "command": "github-actions.logs.refresh",
+        "category": "GitHub Actions",
+        "title": "Refresh logs",
+        "icon": "$(refresh)"
       }
     ],
     "views": {
@@ -347,6 +353,11 @@
         {
           "command": "github-actions.explorer.triggerRun",
           "when": "(githubActions:activeFile =~ /rdispatch/ || githubActions:activeFile =~ /wdispatch/) && resourceExtname =~ /\\.ya?ml/",
+          "group": "navigation"
+        },
+        {
+          "command": "github-actions.logs.refresh",
+          "when": "resourceScheme == gh-actions",
           "group": "navigation"
         }
       ],

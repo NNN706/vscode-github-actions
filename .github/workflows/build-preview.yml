@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   build:
+    if: ${{ github.repository_owner == 'github' }}
     runs-on: ubuntu-latest
 
     steps:

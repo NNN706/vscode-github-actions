@@ -46,3 +46,15 @@ npx vsce package --no-dependencies --out github-actions-multi-repo.vsix
 `skipLibCheck` excludes incompatible upstream dependency declarations (`@types/ws` and browser JSON-RPC worker types) from checking; extension source remains under strict TypeScript checking.
 
 Tests use mocked VS Code and GitHub APIs. Manual acceptance in a signed-in VS Code window is still required: open a non-Git parent with two child repositories, expand both repositories in each sidebar view, switch their branches independently, and verify the proposed ref when triggering a workflow. Cancel the prompt if no actual Actions run is wanted. Add/remove a workspace folder and close/reopen a Git repository to verify refresh behavior.
+
+## Logs (0.32.5)
+
+Click a job or a step in the Actions tree to view its output. Completed jobs open a read-only editor in VS Code, including command output, Docker messages and errors. Step logs open a separate document using GitHub's step-log endpoint. If an older server does not support that endpoint, the editor explicitly falls back to the complete job log. For jobs still running, the click opens the live GitHub page instead.
+
+The editor title bar has **Refresh logs** for logs that are not available immediately. Existing folding, outline and ANSI formatting also apply. Log access uses your existing GitHub sign-in.
+
+## Build a release
+
+Open **Actions → Release VSIX → Run workflow** on `main`. The workflow reads the version from `package.json`, runs checks, builds the extension, and creates a `v<version>` GitHub Release containing the `.vsix` and its `.sha256` checksum. The same files are also retained as workflow artifacts.
+
+Alternatively, push `v<version>` or `release-v<version>`; the tag must match `package.json`. Bump both package manifests before releasing a new version. A repeat run uploads/replaces the assets on the existing release. This workflow uses `GITHUB_TOKEN` and does not require a Marketplace publisher token.
