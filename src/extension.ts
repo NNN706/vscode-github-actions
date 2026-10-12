@@ -59,7 +59,6 @@ export async function activate(context: vscode.ExtensionContext) {
   initConfiguration(context);
 
   // Track workflow documents and workspace changes
-  initWorkspaceChangeTracker(context);
   await initWorkflowDocumentTracking(context);
 
   const store = new RunStore();
@@ -68,7 +67,8 @@ export async function activate(context: vscode.ExtensionContext) {
   await initPinnedWorkflows(store);
 
   // Tree views
-  await initTreeViews(context, store);
+  initTreeViews(context, store);
+  await initWorkspaceChangeTracker(context);
 
   // Commands
   registerOpenWorkflowRun(context);

@@ -1,3 +1,5 @@
+> **Unofficial multi-repository fork.** See [installation and multi-repository behavior](MULTI-REPOSITORY.md). Disable the official GitHub Actions extension before enabling this fork.
+
 # GitHub Actions for VS Code
 
 The GitHub Actions extension lets you manage your workflows, view the workflow run history, and helps with authoring workflows.

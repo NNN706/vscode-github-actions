@@ -6,9 +6,8 @@ import {
   onPinnedWorkflowsChange,
   pinnedWorkflowsRefreshInterval
 } from "../configuration/configuration";
-import {getGitHubContextForWorkspaceUri, GitHubRepoContext} from "../git/repository";
+import {getGitHubContextForDocumentUri, GitHubRepoContext} from "../git/repository";
 
-import {sep} from "path";
 import {log, logError} from "../log";
 import {Workflow} from "../model";
 import {RunStore} from "../store/store";
@@ -66,7 +65,7 @@ async function _init(): Promise<void> {
   }
 }
 
-async function updatePinnedWorkflows() {
+export async function updatePinnedWorkflows() {
   clearPinnedWorkflows();
   const pinnedWorkflows = getPinnedWorkflows();
 
@@ -75,35 +74,20 @@ async function updatePinnedWorkflows() {
     return;
   }
 
-  const firstWorkspaceFolderName = vscode.workspace.workspaceFolders[0].name;
-
-  const workflowsByWorkspace = new Map<string, string[]>();
-
+  const workflowsByRepository = new Map<GitHubRepoContext, string[]>();
   for (const pinnedWorkflow of pinnedWorkflows) {
-    const workflowPath = pinnedWorkflow;
-    if (pinnedWorkflow.startsWith(".github/")) {
-      // No workspace, attribute to the first workspace folder
-      workflowsByWorkspace.set(firstWorkspaceFolderName, [
-        pinnedWorkflow,
-        ...(workflowsByWorkspace.get(firstWorkspaceFolderName) || [])
-      ]);
-    } else {
-      const [workSpaceName, ...r] = workflowPath.split(sep);
-      workflowsByWorkspace.set(workSpaceName, [r.join(sep), ...(workflowsByWorkspace.get(workSpaceName) || [])]);
-    }
+    const segments = pinnedWorkflow.split(/[\\/]/);
+    const namedWorkspace = vscode.workspace.workspaceFolders.find(folder => folder.name === segments[0]);
+    const workspace = namedWorkspace || vscode.workspace.workspaceFolders[0];
+    const path = namedWorkspace ? segments.slice(1).join("/") : segments.join("/");
+    const uri = vscode.Uri.joinPath(workspace.uri, path);
+    const repo = await getGitHubContextForDocumentUri(uri);
+    if (!repo) continue;
+    const relativePath = uri.path.slice(repo.workspaceUri.path.replace(/\/$/, "").length + 1);
+    workflowsByRepository.set(repo, [...(workflowsByRepository.get(repo) || []), relativePath]);
   }
 
-  for (const workspaceName of workflowsByWorkspace.keys()) {
-    const workspace = vscode.workspace.workspaceFolders?.find(x => x.name === workspaceName);
-    if (!workspace) {
-      continue;
-    }
-
-    const gitHubRepoContext = await getGitHubContextForWorkspaceUri(workspace.uri);
-    if (!gitHubRepoContext) {
-      return;
-    }
-
+  for (const [gitHubRepoContext, paths] of workflowsByRepository) {
     // Get all workflows to resolve names. We could do this locally, but for now, let's make the API call.
     const workflows = await gitHubRepoContext.client.paginate(
       gitHubRepoContext.client.actions.listRepoWorkflows,
@@ -118,9 +102,11 @@ async function updatePinnedWorkflows() {
     const workflowByPath: {[id: string]: Workflow} = {};
     workflows.forEach(w => (workflowByPath[w.path] = w));
 
-    for (const pinnedWorkflow of workflowsByWorkspace.get(workspaceName) || []) {
+    for (const pinnedWorkflow of paths) {
       if (!workflowByPath[pinnedWorkflow]) {
-        log(`Unable to find pinned workflow ${pinnedWorkflow} in ${workspaceName}, ignoring`);
+        log(
+          `Unable to find pinned workflow ${pinnedWorkflow} in ${gitHubRepoContext.owner}/${gitHubRepoContext.name}, ignoring`
+        );
         continue;
       }
 

@@ -2,6 +2,7 @@
 module.exports = {
   preset: "ts-jest/presets/default-esm",
   moduleNameMapper: {
+    "^vscode$": "<rootDir>/src/test/vscode.ts",
     "^(\\.{1,2}/.*)\\.js$": "$1"
   },
   transform: {

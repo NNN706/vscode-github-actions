@@ -18,6 +18,7 @@ export function initConfiguration(context: vscode.ExtensionContext) {
 
       if (
         e.affectsConfiguration(getSettingsKey("use-enterprise")) ||
+        e.affectsConfiguration(getSettingsKey("remote-name")) ||
         (useEnterprise() &&
           (e.affectsConfiguration("github-enterprise.uri") || e.affectsConfiguration(getSettingsKey("remote-name"))))
       ) {

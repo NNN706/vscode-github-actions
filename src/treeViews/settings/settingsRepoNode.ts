@@ -9,8 +9,10 @@ import {VariablesNode} from "./variablesNode";
 
 export class SettingsRepoNode extends vscode.TreeItem {
   constructor(public readonly gitHubRepoContext: GitHubRepoContext) {
-    super(gitHubRepoContext.name, vscode.TreeItemCollapsibleState.Collapsed);
+    super(`${gitHubRepoContext.owner}/${gitHubRepoContext.name}`, vscode.TreeItemCollapsibleState.Collapsed);
 
+    this.id = gitHubRepoContext.workspaceUri.toString();
+    this.tooltip = gitHubRepoContext.workspaceUri.fsPath;
     this.contextValue = "settings-repo";
   }
 

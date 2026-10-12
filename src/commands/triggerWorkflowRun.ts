@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-import {getGitHead, getGitHubContextForWorkspaceUri, GitHubRepoContext} from "../git/repository";
+import {getGitHead, getGitHubContextForDocumentUri, GitHubRepoContext} from "../git/repository";
 import {getWorkflowUri, parseWorkflowFile} from "../workflow/workflow";
 
 import {Workflow} from "../model";
@@ -18,7 +18,7 @@ export function registerTriggerWorkflowRun(context: vscode.ExtensionContext) {
         let workflowUri: vscode.Uri | null = null;
         if (args instanceof vscode.Uri) {
           workflowUri = args;
-        } else if (args.wf) {
+        } else if (args?.wf) {
           const wf: Workflow = args.wf;
           workflowUri = getWorkflowUri(args.gitHubRepoContext, wf.path);
         }
@@ -27,13 +27,8 @@ export function registerTriggerWorkflowRun(context: vscode.ExtensionContext) {
           return;
         }
 
-        // Parse
-        const workspaceFolder = vscode.workspace.getWorkspaceFolder(workflowUri);
-        if (!workspaceFolder) {
-          return;
-        }
-
-        const gitHubRepoContext = await getGitHubContextForWorkspaceUri(workspaceFolder.uri);
+        const gitHubRepoContext =
+          args instanceof vscode.Uri ? await getGitHubContextForDocumentUri(workflowUri) : args.gitHubRepoContext;
         if (!gitHubRepoContext) {
           return;
         }
@@ -59,7 +54,7 @@ export function registerTriggerWorkflowRun(context: vscode.ExtensionContext) {
         ) {
           const ref = await vscode.window.showInputBox({
             prompt: "Enter ref to trigger workflow on",
-            value: (await getGitHead()) || gitHubRepoContext.defaultBranch
+            value: getGitHead(gitHubRepoContext) || gitHubRepoContext.defaultBranch
           });
 
           if (ref) {
@@ -85,7 +80,9 @@ export function registerTriggerWorkflowRun(context: vscode.ExtensionContext) {
             }
 
             try {
-              const relativeWorkflowPath = vscode.workspace.asRelativePath(workflowUri, false);
+              const relativeWorkflowPath = workflowUri.path.slice(
+                gitHubRepoContext.workspaceUri.path.replace(/\/$/, "").length + 1
+              );
 
               await gitHubRepoContext.client.actions.createWorkflowDispatch({
                 owner: gitHubRepoContext.owner,

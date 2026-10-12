@@ -1,14 +1,14 @@
 {
-  "name": "@github/vscode-github-actions",
-  "displayName": "GitHub Actions",
-  "publisher": "github",
+  "name": "vscode-github-actions-multi-repo",
+  "displayName": "GitHub Actions (Multi-Repository)",
+  "publisher": "NNN706",
   "icon": "resources/logo.png",
   "license": "MIT",
   "repository": {
-    "url": "https://github.com/github/vscode-github-actions"
+    "url": "https://github.com/NNN706/vscode-github-actions"
   },
-  "description": "GitHub Actions workflows and runs for github.com hosted repositories in VS Code",
-  "version": "0.32.3",
+  "description": "Unofficial fork of GitHub Actions with nested and multi-root repository support",
+  "version": "0.32.4",
   "engines": {
     "vscode": "^1.72.0",
     "node": ">= 16"
@@ -578,6 +578,7 @@
     "ts-jest": "^29.0.3",
     "ts-loader": "^9.4.1",
     "typescript": "^4.9.4",
+    "vscode-uri": "3.1.0",
     "webpack": "^5.96.1",
     "webpack-cli": "^4.10.0"
   },
