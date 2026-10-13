@@ -83,13 +83,13 @@ jobs:
           WORKFLOW_REPO_TOKEN: ${{ secrets.WORKFLOW_REPO_TOKEN }}
         run: |
           if [ -z "$WORKFLOW_REPO_TOKEN" ]; then
-            echo "::error::Add WORKFLOW_REPO_TOKEN with Contents: Read and write for NNN706/workflow."
+            echo "::error::Add WORKFLOW_REPO_TOKEN with Contents: Read and write for NNN706/workspace."
             exit 1
           fi
       - name: Checkout private workflow repository
         uses: actions/checkout@v4
         with:
-          repository: NNN706/workflow
+          repository: NNN706/workspace
           token: ${{ secrets.WORKFLOW_REPO_TOKEN }}
           path: workflow-target
           persist-credentials: false

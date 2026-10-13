@@ -57,12 +57,12 @@ The editor title bar has **Refresh logs** for logs that are not available immedi
 
 Open **Actions → Release VSIX → Run workflow** on `main`. The workflow reads the version from `package.json`, runs checks, builds the extension, and creates a `v<version>` GitHub Release containing the `.vsix` and its `.sha256` checksum. The same files are also retained as workflow artifacts.
 
-Alternatively, push `v<version>` or `release-v<version>`; the tag must match `package.json`. Bump both package manifests before releasing a new version. A repeat run uploads/replaces the assets on the existing release. The GitHub Release uses `GITHUB_TOKEN`. After successful release creation, the same job copies its built VSIX into the private `NNN706/workflow` repository as described below.
+Alternatively, push `v<version>` or `release-v<version>`; the tag must match `package.json`. Bump both package manifests before releasing a new version. A repeat run uploads/replaces the assets on the existing release. The GitHub Release uses `GITHUB_TOKEN`. After successful release creation, the same job copies its built VSIX into the private `NNN706/workspace` repository as described below.
 
 
 ## Deploy to the private workspace repository
 
-Add the Actions secret `WORKFLOW_REPO_TOKEN` to `NNN706/vscode-github-actions`: a fine-grained GitHub PAT restricted to `NNN706/workflow`, with **Contents: Read and write**. It is used by a second checkout and the deploy push; `GITHUB_TOKEN` is never used for cross-repository writes. Missing credentials fail deployment after the GitHub Release has been created.
+Add the Actions secret `WORKFLOW_REPO_TOKEN` to `NNN706/vscode-github-actions`: a fine-grained GitHub PAT restricted to `NNN706/workspace`, with **Contents: Read and write**. It is used by a second checkout and the deploy push; `GITHUB_TOKEN` is never used for cross-repository writes. Missing credentials fail deployment after the GitHub Release has been created.
 
 The workflow checks out the target default branch into `workflow-target`, removes only `.vscode/vsix/github-actions-multi-repo-*.vsix`, and copies the VSIX already built in the same job. Other files, including Ansible VSIX packages, are preserved. Only `.vscode/vsix/` is staged (including ignored VSIX files). An identical artifact produces no commit. Changes are committed by `github-actions[bot]` and pushed without force; a conflicting external push fails safely and can be retried.
 
