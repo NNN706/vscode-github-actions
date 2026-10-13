@@ -55,6 +55,17 @@ The editor title bar has **Refresh logs** for logs that are not available immedi
 
 ## Build a release
 
-Open **Actions → Release VSIX and publish to Marketplace → Run workflow** on `main`. The workflow reads the version from `package.json`, runs checks, builds the extension, and creates a `v<version>` GitHub Release containing the `.vsix` and its `.sha256` checksum. The same files are also retained as workflow artifacts.
+Open **Actions → Release VSIX → Run workflow** on `main`. The workflow reads the version from `package.json`, runs checks, builds the extension, and creates a `v<version>` GitHub Release containing the `.vsix` and its `.sha256` checksum. The same files are also retained as workflow artifacts.
 
-Alternatively, push `v<version>` or `release-v<version>`; the tag must match `package.json`. Bump both package manifests before releasing a new version. A repeat run uploads/replaces the assets on the existing release. The GitHub Release job uses `GITHUB_TOKEN`. The subsequent Marketplace job requires `VSCE_PAT`; see [Marketplace setup](MARKETPLACE.md). Disable `publish_marketplace` in a manual run to build only the GitHub Release.
+Alternatively, push `v<version>` or `release-v<version>`; the tag must match `package.json`. Bump both package manifests before releasing a new version. A repeat run uploads/replaces the assets on the existing release. The GitHub Release uses `GITHUB_TOKEN`. After successful release creation, the same job copies its built VSIX into the private `NNN706/workflow` repository as described below.
+
+
+## Deploy to the private workspace repository
+
+Add the Actions secret `WORKFLOW_REPO_TOKEN` to `NNN706/vscode-github-actions`: a fine-grained GitHub PAT restricted to `NNN706/workflow`, with **Contents: Read and write**. It is used by a second checkout and the deploy push; `GITHUB_TOKEN` is never used for cross-repository writes. Missing credentials fail deployment after the GitHub Release has been created.
+
+The workflow checks out the target default branch into `workflow-target`, removes only `.vscode/vsix/github-actions-multi-repo-*.vsix`, and copies the VSIX already built in the same job. Other files, including Ansible VSIX packages, are preserved. Only `.vscode/vsix/` is staged (including ignored VSIX files). An identical artifact produces no commit. Changes are committed by `github-actions[bot]` and pushed without force; a conflicting external push fails safely and can be retried.
+
+A single concurrency group serializes releases across tags. A semantic-version check prevents an older queued release from replacing a newer deployed version. Deployment targets the repository's default branch, which must allow the token owner to push. Git credentials are not persisted by checkout; the push reads the PAT through an in-memory credential helper.
+
+Marketplace publishing has been removed. The publisher is restored to `NNN706` for compatibility with the initial VSIX. If you installed an intermediate `NN703` build, disable or uninstall it before enabling the `NNN706` build because their commands and views overlap.
